@@ -16,6 +16,10 @@ import DashboardHome from "./pages/dashboard/DashboardHome";
 import ProductManagement from "./pages/dashboard/products/ProductManagement";
 import ProductBrowser from "./pages/dashboard/products/ProductBrowser";
 import LeadManagement from "./pages/dashboard/leads/LeadManagement";
+import ProfilePage from "./pages/dashboard/profile/ProfilePage";
+import TrainingModules from "./pages/dashboard/training/TrainingModules";
+import FactoryDirectory from "./pages/directory/FactoryDirectory";
+import FactoryMicrosite from "./pages/factory/FactoryMicrosite";
 import { useAuth } from "./context/AuthContext";
 
 const queryClient = new QueryClient();
@@ -42,6 +46,8 @@ const App = () => (
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
+            <Route path="/factories" element={<FactoryDirectory />} />
+            <Route path="/factory/:factoryId" element={<FactoryMicrosite />} />
           </Route>
 
           {/* Protected Routes */}
@@ -61,6 +67,22 @@ const App = () => (
                 element={<LeadManagement />} 
               />
               
+              {/* Profile Page */}
+              <Route
+                path="/dashboard/profile"
+                element={<ProfilePage />}
+              />
+
+              {/* Training Page (for marketers) */}
+              <Route
+                path="/dashboard/training"
+                element={
+                  <ProtectedRoute allowedRoles={["marketer"]}>
+                    <TrainingModules />
+                  </ProtectedRoute>
+                }
+              />
+              
               {/* Factory-specific routes */}
               <Route 
                 path="/dashboard/marketers" 
@@ -72,12 +94,6 @@ const App = () => (
               {/* Marketer-specific routes */}
               <Route 
                 path="/dashboard/campaigns" 
-                element={
-                  <ProtectedRoute allowedRoles={["marketer"]} />
-                } 
-              />
-              <Route 
-                path="/dashboard/training" 
                 element={
                   <ProtectedRoute allowedRoles={["marketer"]} />
                 } 
@@ -98,7 +114,6 @@ const App = () => (
               />
               
               {/* Common routes */}
-              <Route path="/dashboard/profile" element={<div>Profile Page - Coming Soon</div>} />
               <Route path="/dashboard/analytics" element={<div>Analytics Page - Coming Soon</div>} />
               <Route path="/dashboard/settings" element={<div>Settings Page - Coming Soon</div>} />
             </Route>
