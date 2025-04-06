@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -20,11 +19,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { Badge } from "@/components/ui/badge";
 import { ProductFormDialog } from "@/components/dashboard/products/ProductFormDialog";
 import { useToast } from "@/hooks/use-toast";
 
-// Mock products data
 const mockProducts = [
   {
     id: "1",
@@ -85,7 +92,91 @@ const mockProducts = [
     leads: 3,
     createdAt: "2024-02-20",
     image: "https://via.placeholder.com/100x100",
-  }
+  },
+  {
+    id: "6",
+    name: "Custom Wooden Furniture Set",
+    category: "Furniture",
+    price: 1800,
+    status: "active",
+    targetMarkets: ["Europe", "USA", "Gulf"],
+    marketers: 7,
+    leads: 15,
+    createdAt: "2024-02-10",
+    image: "https://via.placeholder.com/100x100",
+  },
+  {
+    id: "7",
+    name: "Egyptian Cotton Towels",
+    category: "Textiles",
+    price: 55,
+    status: "active",
+    targetMarkets: ["Europe", "USA"],
+    marketers: 3,
+    leads: 8,
+    createdAt: "2024-02-05",
+    image: "https://via.placeholder.com/100x100",
+  },
+  {
+    id: "8",
+    name: "Handmade Copper Cookware",
+    category: "Kitchen",
+    price: 240,
+    status: "pending",
+    targetMarkets: ["Europe", "Gulf"],
+    marketers: 0,
+    leads: 0,
+    createdAt: "2024-03-25",
+    image: "https://via.placeholder.com/100x100",
+  },
+  {
+    id: "9",
+    name: "Natural Stone Tiles",
+    category: "Construction",
+    price: 38,
+    status: "inactive",
+    targetMarkets: ["Europe", "USA", "Africa"],
+    marketers: 1,
+    leads: 2,
+    createdAt: "2024-01-15",
+    image: "https://via.placeholder.com/100x100",
+  },
+  {
+    id: "10",
+    name: "Olive Wood Cutting Boards",
+    category: "Kitchen",
+    price: 75,
+    status: "active",
+    targetMarkets: ["Europe", "USA"],
+    marketers: 4,
+    leads: 7,
+    createdAt: "2024-01-20",
+    image: "https://via.placeholder.com/100x100",
+  },
+  {
+    id: "11",
+    name: "Handcrafted Jewelry Box",
+    category: "Home Decor",
+    price: 120,
+    status: "active",
+    targetMarkets: ["Europe", "USA", "Asia"],
+    marketers: 3,
+    leads: 5,
+    createdAt: "2024-02-25",
+    image: "https://via.placeholder.com/100x100",
+  },
+  {
+    id: "12",
+    name: "Traditional Egyptian Rugs",
+    category: "Home Decor",
+    price: 350,
+    status: "active",
+    targetMarkets: ["Europe", "USA", "Gulf"],
+    marketers: 6,
+    leads: 11,
+    createdAt: "2024-01-10",
+    image: "https://via.placeholder.com/100x100",
+  },
 ];
 
 export default function ProductManagement() {
@@ -93,6 +184,8 @@ export default function ProductManagement() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
   const { toast } = useToast();
 
   const handleAddProduct = () => {
@@ -125,6 +218,11 @@ export default function ProductManagement() {
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -192,14 +290,14 @@ export default function ProductManagement() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredProducts.length === 0 ? (
+                    {currentItems.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={8} className="text-center py-8">
                           No products found. Add your first product to start exporting!
                         </TableCell>
                       </TableRow>
                     ) : (
-                      filteredProducts.map((product) => (
+                      currentItems.map((product) => (
                         <TableRow key={product.id}>
                           <TableCell className="font-medium">
                             <div className="flex items-center gap-3">
@@ -277,6 +375,57 @@ export default function ProductManagement() {
                   </TableBody>
                 </Table>
               </div>
+              
+              {filteredProducts.length > itemsPerPage && (
+                <div className="mt-4">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious 
+                          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                          className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        />
+                      </PaginationItem>
+                      
+                      {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                        const pageNum = i + 1;
+                        return (
+                          <PaginationItem key={pageNum}>
+                            <PaginationLink 
+                              isActive={pageNum === currentPage}
+                              onClick={() => setCurrentPage(pageNum)}
+                            >
+                              {pageNum}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                      })}
+                      
+                      {totalPages > 5 && (
+                        <>
+                          <PaginationItem>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                          <PaginationItem>
+                            <PaginationLink
+                              onClick={() => setCurrentPage(totalPages)}
+                            >
+                              {totalPages}
+                            </PaginationLink>
+                          </PaginationItem>
+                        </>
+                      )}
+                      
+                      <PaginationItem>
+                        <PaginationNext 
+                          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                          className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

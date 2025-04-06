@@ -10,6 +10,7 @@ import { BookOpen, CheckCircle, Clock, GraduationCap, PlayCircle, Star, Trophy }
 import { ModuleCard } from "@/components/dashboard/training/ModuleCard";
 import { TrainingCertification } from "@/components/dashboard/training/TrainingCertification";
 import { ModuleDetailsDialog } from "@/components/dashboard/training/ModuleDetailsDialog";
+import { FinalAssessmentDialog } from "@/components/dashboard/training/FinalAssessmentDialog";
 import { useToast } from "@/hooks/use-toast";
 
 // Types for our training modules
@@ -31,6 +32,8 @@ export default function TrainingModules() {
   const [activeCategory, setActiveCategory] = useState<"all" | "beginner" | "intermediate" | "advanced">("all");
   const [selectedModule, setSelectedModule] = useState<Module | null>(null);
   const [isModuleDetailsOpen, setIsModuleDetailsOpen] = useState(false);
+  const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
+  const [hasCertificate, setHasCertificate] = useState(false);
   const [modules, setModules] = useState<Module[]>([
     {
       id: "1",
@@ -147,6 +150,20 @@ export default function TrainingModules() {
     setIsModuleDetailsOpen(false);
   };
 
+  const handleTakeAssessment = () => {
+    setIsAssessmentOpen(true);
+  };
+
+  const handleCompleteAssessment = () => {
+    setIsAssessmentOpen(false);
+    setHasCertificate(true);
+    toast({
+      title: "Certification Earned!",
+      description: "Congratulations on earning your Export Marketing Certification.",
+      duration: 5000,
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -208,7 +225,8 @@ export default function TrainingModules() {
       
       <TrainingCertification 
         completedModules={completedModules} 
-        totalModules={totalModules} 
+        totalModules={totalModules}
+        onTakeAssessment={handleTakeAssessment}
       />
 
       <ModuleDetailsDialog
@@ -216,6 +234,12 @@ export default function TrainingModules() {
         onClose={() => setIsModuleDetailsOpen(false)}
         module={selectedModule}
         onComplete={selectedModule ? () => handleCompleteModule(selectedModule.id) : undefined}
+      />
+      
+      <FinalAssessmentDialog
+        isOpen={isAssessmentOpen}
+        onClose={() => setIsAssessmentOpen(false)}
+        onComplete={handleCompleteAssessment}
       />
     </div>
   );

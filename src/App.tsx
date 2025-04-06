@@ -20,6 +20,7 @@ import ProfilePage from "./pages/dashboard/profile/ProfilePage";
 import TrainingModules from "./pages/dashboard/training/TrainingModules";
 import AnalyticsPage from "./pages/dashboard/analytics/AnalyticsPage";
 import SettingsPage from "./pages/dashboard/settings/SettingsPage";
+import CampaignsPage from "./pages/dashboard/campaigns/CampaignsPage"; 
 import FactoryDirectory from "./pages/directory/FactoryDirectory";
 import FactoryMicrosite from "./pages/factory/FactoryMicrosite";
 import { useAuth } from "./context/AuthContext";
@@ -85,22 +86,22 @@ const App = () => (
                 }
               />
               
+              {/* Campaigns Page (for marketers) */}
+              <Route
+                path="/dashboard/campaigns"
+                element={
+                  <ProtectedRoute allowedRoles={["marketer"]}>
+                    <CampaignsPage />
+                  </ProtectedRoute>
+                }
+              />
+              
               {/* Factory-specific routes */}
               <Route 
                 path="/dashboard/marketers" 
                 element={
                   <ProtectedRoute allowedRoles={["factory", "admin"]}>
                     <div>Marketers Page - Coming Soon</div>
-                  </ProtectedRoute>
-                } 
-              />
-              
-              {/* Marketer-specific routes */}
-              <Route 
-                path="/dashboard/campaigns" 
-                element={
-                  <ProtectedRoute allowedRoles={["marketer"]}>
-                    <div>Campaigns Page - Coming Soon</div>
                   </ProtectedRoute>
                 } 
               />

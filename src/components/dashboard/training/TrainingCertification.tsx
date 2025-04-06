@@ -1,16 +1,28 @@
-import { GraduationCap, Award, ArrowRight, Check } from "lucide-react";
+
+import { GraduationCap, Award, ArrowRight, Check, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
 
 interface TrainingCertificationProps {
   completedModules: number;
   totalModules: number;
+  onTakeAssessment?: () => void;
 }
 
-export function TrainingCertification({ completedModules, totalModules }: TrainingCertificationProps) {
+export function TrainingCertification({ 
+  completedModules, 
+  totalModules,
+  onTakeAssessment 
+}: TrainingCertificationProps) {
   const progress = Math.round((completedModules / totalModules) * 100);
   const isEligible = completedModules === totalModules;
+  const [certificateGenerated, setCertificateGenerated] = useState(false);
+  
+  const handleGenerateCertificate = () => {
+    setCertificateGenerated(true);
+  };
   
   return (
     <div className="bg-muted/50 rounded-lg p-6 mt-8">
@@ -62,16 +74,29 @@ export function TrainingCertification({ completedModules, totalModules }: Traini
             </div>
           </div>
         </div>
-        <Button 
-          disabled={!isEligible}
-          className="whitespace-nowrap"
-        >
-          {isEligible ? (
-            <>Take Final Assessment<ArrowRight className="ml-2 h-4 w-4" /></>
-          ) : (
-            "Complete All Modules"
+        <div className="flex flex-col md:flex-row gap-2">
+          {isEligible && certificateGenerated && (
+            <Button 
+              variant="outline"
+              className="whitespace-nowrap"
+              onClick={handleGenerateCertificate}
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Download Certificate
+            </Button>
           )}
-        </Button>
+          <Button 
+            disabled={!isEligible}
+            className="whitespace-nowrap"
+            onClick={onTakeAssessment}
+          >
+            {isEligible ? (
+              <>Take Final Assessment<ArrowRight className="ml-2 h-4 w-4" /></>
+            ) : (
+              "Complete All Modules"
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   );
