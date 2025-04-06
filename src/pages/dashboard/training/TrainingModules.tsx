@@ -6,10 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, CheckCircle, Clock, GraduationCap, PlayCircle, Star } from "lucide-react";
+import { BookOpen, CheckCircle, Clock, GraduationCap, PlayCircle, Star, Trophy } from "lucide-react";
+import { ModuleCard } from "@/components/dashboard/training/ModuleCard";
+import { TrainingCertification } from "@/components/dashboard/training/TrainingCertification";
+import { ModuleDetailsDialog } from "@/components/dashboard/training/ModuleDetailsDialog";
+import { useToast } from "@/hooks/use-toast";
 
 // Types for our training modules
-interface Module {
+export interface Module {
   id: string;
   title: string;
   description: string;
@@ -17,14 +21,17 @@ interface Module {
   category: "beginner" | "intermediate" | "advanced";
   completed: boolean;
   thumbnail: string;
+  content?: string;
+  objectives?: string[];
 }
 
 export default function TrainingModules() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [activeCategory, setActiveCategory] = useState<"all" | "beginner" | "intermediate" | "advanced">("all");
-  
-  // Mock training modules data
-  const modules: Module[] = [
+  const [selectedModule, setSelectedModule] = useState<Module | null>(null);
+  const [isModuleDetailsOpen, setIsModuleDetailsOpen] = useState(false);
+  const [modules, setModules] = useState<Module[]>([
     {
       id: "1",
       title: "Introduction to Export Marketing",
@@ -33,6 +40,13 @@ export default function TrainingModules() {
       category: "beginner",
       completed: true,
       thumbnail: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80",
+      content: "This module covers the fundamentals of export marketing, including market research, product positioning, and understanding international trade regulations. You'll learn how to identify potential export markets and develop effective strategies for entering them.",
+      objectives: [
+        "Understand the basics of export marketing",
+        "Identify potential export markets for Egyptian products",
+        "Learn about international trade regulations",
+        "Develop effective product positioning strategies"
+      ]
     },
     {
       id: "2",
@@ -42,6 +56,13 @@ export default function TrainingModules() {
       category: "beginner",
       completed: false,
       thumbnail: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=600&q=80",
+      content: "This module explores advanced techniques for positioning Egyptian products in foreign markets. You'll learn how to highlight unique selling points, adapt to cultural preferences, and compete effectively against local and international competitors.",
+      objectives: [
+        "Develop effective positioning statements for various markets",
+        "Understand cultural factors affecting product positioning",
+        "Learn to highlight Egyptian craftsmanship as a competitive advantage",
+        "Create market-specific value propositions"
+      ]
     },
     {
       id: "3",
@@ -51,6 +72,13 @@ export default function TrainingModules() {
       category: "intermediate",
       completed: false,
       thumbnail: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=600&q=80",
+      content: "This module focuses on developing effective cross-cultural communication skills essential for export marketers. You'll learn how to adapt your messaging to different cultural contexts and avoid common pitfalls in international business communication.",
+      objectives: [
+        "Understand high-context vs. low-context communication styles",
+        "Learn negotiation tactics for different cultural regions",
+        "Develop culturally sensitive marketing materials",
+        "Avoid common cross-cultural miscommunication mistakes"
+      ]
     },
     {
       id: "4",
@@ -60,6 +88,13 @@ export default function TrainingModules() {
       category: "advanced",
       completed: false,
       thumbnail: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=600&q=80",
+      content: "This advanced module covers sophisticated market analysis techniques for identifying high-potential export opportunities. You'll learn how to analyze market trends, consumer behavior, and competitive landscapes to make data-driven decisions.",
+      objectives: [
+        "Conduct comprehensive market research for export opportunities",
+        "Analyze competitor positioning in foreign markets",
+        "Identify emerging market trends and opportunities",
+        "Develop data-driven market entry strategies"
+      ]
     },
     {
       id: "5",
@@ -69,13 +104,48 @@ export default function TrainingModules() {
       category: "intermediate",
       completed: false,
       thumbnail: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80",
+      content: "This module explores how to use digital marketing channels to promote Egyptian products internationally. You'll learn strategies for social media marketing, content creation, and online advertising that are effective across different international markets.",
+      objectives: [
+        "Develop an international digital marketing strategy",
+        "Optimize product listings for global e-commerce platforms",
+        "Create culturally relevant content for different markets",
+        "Track and measure digital marketing performance across regions"
+      ]
     },
-  ];
+  ]);
   
   // Filter modules based on active category
   const filteredModules = activeCategory === "all" 
     ? modules 
     : modules.filter(module => module.category === activeCategory);
+
+  // Calculate completion statistics
+  const completedModules = modules.filter(m => m.completed).length;
+  const totalModules = modules.length;
+  const completionPercentage = Math.round((completedModules / totalModules) * 100);
+
+  // Handle module actions
+  const handleViewModule = (module: Module) => {
+    setSelectedModule(module);
+    setIsModuleDetailsOpen(true);
+  };
+
+  const handleStartModule = (moduleId: string) => {
+    handleViewModule(modules.find(m => m.id === moduleId)!);
+  };
+
+  const handleCompleteModule = (moduleId: string) => {
+    setModules(prevModules => 
+      prevModules.map(m => 
+        m.id === moduleId ? { ...m, completed: true } : m
+      )
+    );
+    toast({
+      title: "Module Completed!",
+      description: "Your progress has been updated and saved.",
+    });
+    setIsModuleDetailsOpen(false);
+  };
 
   return (
     <div className="space-y-6">
@@ -101,10 +171,15 @@ export default function TrainingModules() {
           </div>
           
           <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="text-xs px-2 py-1">
-              <Clock className="h-3 w-3 mr-1" />
-              {modules.filter(m => m.completed).length} of {modules.length} completed
-            </Badge>
+            <div className="bg-muted p-2 rounded-md flex items-center gap-2">
+              <Trophy className="h-4 w-4 text-amber-500" />
+              <span className="text-sm font-medium">
+                {completedModules} of {totalModules} completed
+              </span>
+              <Badge variant="secondary" className="text-xs">
+                {completionPercentage}%
+              </Badge>
+            </div>
           </div>
         </div>
       </div>
@@ -120,73 +195,28 @@ export default function TrainingModules() {
         <TabsContent value={activeCategory} className="mt-0">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredModules.map((module) => (
-              <ModuleCard key={module.id} module={module} />
+              <ModuleCard 
+                key={module.id} 
+                module={module} 
+                onView={() => handleViewModule(module)}
+                onStart={() => handleStartModule(module.id)}
+              />
             ))}
           </div>
         </TabsContent>
       </Tabs>
       
-      <div className="bg-muted/50 rounded-lg p-6 mt-8">
-        <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
-          <div className="p-3 bg-primary/10 rounded-full">
-            <GraduationCap className="h-6 w-6 text-primary" />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-lg font-medium">Become a Certified Export Marketer</h3>
-            <p className="text-sm text-muted-foreground">Complete all modules and take the final assessment to earn your certification.</p>
-          </div>
-          <Button>View Certification Path</Button>
-        </div>
-      </div>
-    </div>
-  );
-}
+      <TrainingCertification 
+        completedModules={completedModules} 
+        totalModules={totalModules} 
+      />
 
-// Module card component
-function ModuleCard({ module }: { module: Module }) {
-  return (
-    <Card className="overflow-hidden">
-      <div className="relative h-48 overflow-hidden">
-        <img 
-          src={module.thumbnail} 
-          alt={module.title}
-          className="w-full h-full object-cover transition-transform hover:scale-105"
-        />
-        {module.completed && (
-          <div className="absolute top-2 right-2 bg-green-500 text-white p-1 rounded-full">
-            <CheckCircle className="h-5 w-5" />
-          </div>
-        )}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-          <Badge className="capitalize">{module.category}</Badge>
-        </div>
-      </div>
-      
-      <CardHeader>
-        <CardTitle>{module.title}</CardTitle>
-        <CardDescription className="flex items-center gap-1">
-          <Clock className="h-4 w-4" />
-          {module.duration}
-        </CardDescription>
-      </CardHeader>
-      
-      <CardContent>
-        <p className="text-sm">{module.description}</p>
-      </CardContent>
-      
-      <CardFooter className="flex justify-between items-center">
-        <div className="flex items-center text-sm text-muted-foreground">
-          <BookOpen className="mr-1 h-4 w-4" />
-          {module.completed ? "Completed" : "Not started"}
-        </div>
-        <Button className="flex items-center">
-          {module.completed ? (
-            <>Review<Star className="ml-1 h-4 w-4" /></>
-          ) : (
-            <>Start<PlayCircle className="ml-1 h-4 w-4" /></>
-          )}
-        </Button>
-      </CardFooter>
-    </Card>
+      <ModuleDetailsDialog
+        isOpen={isModuleDetailsOpen}
+        onClose={() => setIsModuleDetailsOpen(false)}
+        module={selectedModule}
+        onComplete={selectedModule ? () => handleCompleteModule(selectedModule.id) : undefined}
+      />
+    </div>
   );
 }
