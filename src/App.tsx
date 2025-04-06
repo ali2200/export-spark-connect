@@ -87,7 +87,9 @@ const App = () => (
               <Route 
                 path="/dashboard/marketers" 
                 element={
-                  <ProtectedRoute allowedRoles={["factory", "admin"]} />
+                  <ProtectedRoute allowedRoles={["factory", "admin"]}>
+                    <div>Marketers Page - Coming Soon</div>
+                  </ProtectedRoute>
                 } 
               />
               
@@ -95,7 +97,9 @@ const App = () => (
               <Route 
                 path="/dashboard/campaigns" 
                 element={
-                  <ProtectedRoute allowedRoles={["marketer"]} />
+                  <ProtectedRoute allowedRoles={["marketer"]}>
+                    <div>Campaigns Page - Coming Soon</div>
+                  </ProtectedRoute>
                 } 
               />
               
@@ -103,13 +107,17 @@ const App = () => (
               <Route 
                 path="/dashboard/factories" 
                 element={
-                  <ProtectedRoute allowedRoles={["admin"]} />
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <div>Factories Management - Coming Soon</div>
+                  </ProtectedRoute>
                 } 
               />
               <Route 
                 path="/dashboard/content" 
                 element={
-                  <ProtectedRoute allowedRoles={["admin"]} />
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <div>Content Management - Coming Soon</div>
+                  </ProtectedRoute>
                 } 
               />
               

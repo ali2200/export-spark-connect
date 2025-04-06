@@ -1,12 +1,14 @@
 
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth, UserRole } from "@/context/AuthContext";
+import { ReactNode } from "react";
 
 interface ProtectedRouteProps {
   allowedRoles?: UserRole[];
+  children?: ReactNode;
 }
 
-export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
+export function ProtectedRoute({ allowedRoles, children }: ProtectedRouteProps) {
   const { isAuthenticated, user, isLoading } = useAuth();
   const location = useLocation();
 
@@ -29,6 +31,6 @@ export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
     return <Navigate to="/unauthorized" replace />;
   }
 
-  // Render child routes
-  return <Outlet />;
+  // Render children if provided, otherwise render outlet for nested routes
+  return children ? <>{children}</> : <Outlet />;
 }
