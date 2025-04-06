@@ -18,6 +18,8 @@ import ProductBrowser from "./pages/dashboard/products/ProductBrowser";
 import LeadManagement from "./pages/dashboard/leads/LeadManagement";
 import ProfilePage from "./pages/dashboard/profile/ProfilePage";
 import TrainingModules from "./pages/dashboard/training/TrainingModules";
+import AnalyticsPage from "./pages/dashboard/analytics/AnalyticsPage";
+import SettingsPage from "./pages/dashboard/settings/SettingsPage";
 import FactoryDirectory from "./pages/directory/FactoryDirectory";
 import FactoryMicrosite from "./pages/factory/FactoryMicrosite";
 import { useAuth } from "./context/AuthContext";
@@ -122,8 +124,8 @@ const App = () => (
               />
               
               {/* Common routes */}
-              <Route path="/dashboard/analytics" element={<div>Analytics Page - Coming Soon</div>} />
-              <Route path="/dashboard/settings" element={<div>Settings Page - Coming Soon</div>} />
+              <Route path="/dashboard/analytics" element={<AnalyticsPage />} />
+              <Route path="/dashboard/settings" element={<SettingsPage />} />
             </Route>
           </Route>
           

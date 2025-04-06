@@ -1,479 +1,192 @@
 
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { useToast } from "@/hooks/use-toast";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, Play, Award, CheckCircle, LockIcon } from "lucide-react";
+import { BookOpen, CheckCircle, Clock, GraduationCap, PlayCircle, Star } from "lucide-react";
 
-// Mock training data
-const mockTrainingModules = [
-  {
-    id: "1",
-    title: "Introduction to Export Marketing",
-    description: "Learn the basics of export marketing and global trade.",
-    duration: "2h 15m",
-    lessons: 8,
-    category: "basics",
-    progress: 100,
-    completed: true,
-    image: "https://via.placeholder.com/400x225",
-  },
-  {
-    id: "2",
-    title: "Understanding International Markets",
-    description: "Discover how to research and enter new international markets.",
-    duration: "3h 45m",
-    lessons: 12,
-    category: "basics",
-    progress: 60,
-    completed: false,
-    image: "https://via.placeholder.com/400x225",
-  },
-  {
-    id: "3",
-    title: "Egyptian Furniture Export",
-    description: "Specialized training for furniture export from Egypt.",
-    duration: "4h 30m",
-    lessons: 16,
-    category: "industry",
-    progress: 25,
-    completed: false,
-    image: "https://via.placeholder.com/400x225",
-  },
-  {
-    id: "4",
-    title: "Textile Export Masterclass",
-    description: "Comprehensive guide to textile export strategies.",
-    duration: "5h 20m",
-    lessons: 18,
-    category: "industry",
-    progress: 0,
-    completed: false,
-    image: "https://via.placeholder.com/400x225",
-  },
-  {
-    id: "5",
-    title: "Advanced Lead Generation",
-    description: "Tactics and strategies to generate quality export leads.",
-    duration: "3h 10m",
-    lessons: 10,
-    category: "skills",
-    progress: 0,
-    completed: false,
-    image: "https://via.placeholder.com/400x225",
-  },
-  {
-    id: "6",
-    title: "Negotiation in Export Deals",
-    description: "Master the art of negotiation in international trade.",
-    duration: "2h 40m",
-    lessons: 8,
-    category: "skills",
-    progress: 0,
-    completed: false,
-    image: "https://via.placeholder.com/400x225",
-  },
-];
+// Types for our training modules
+interface Module {
+  id: string;
+  title: string;
+  description: string;
+  duration: string;
+  category: "beginner" | "intermediate" | "advanced";
+  completed: boolean;
+  thumbnail: string;
+}
 
 export default function TrainingModules() {
-  const [selectedModule, setSelectedModule] = useState<any>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const { toast } = useToast();
-
-  const handleContinueTraining = (module: any) => {
-    toast({
-      title: "Continuing training",
-      description: `Resuming ${module.title} from where you left off.`,
-    });
-    setSelectedModule(module);
-    setIsModalOpen(true);
-  };
-
-  const handleStartTraining = (module: any) => {
-    toast({
-      title: "Starting new training",
-      description: `Beginning ${module.title} module.`,
-    });
-    setSelectedModule(module);
-    setIsModalOpen(true);
-  };
+  const { user } = useAuth();
+  const [activeCategory, setActiveCategory] = useState<"all" | "beginner" | "intermediate" | "advanced">("all");
+  
+  // Mock training modules data
+  const modules: Module[] = [
+    {
+      id: "1",
+      title: "Introduction to Export Marketing",
+      description: "Learn the basics of marketing products for international export",
+      duration: "45 minutes",
+      category: "beginner",
+      completed: true,
+      thumbnail: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80",
+    },
+    {
+      id: "2",
+      title: "Product Positioning Strategies",
+      description: "How to position products effectively in foreign markets",
+      duration: "1 hour",
+      category: "beginner",
+      completed: false,
+      thumbnail: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=600&q=80",
+    },
+    {
+      id: "3",
+      title: "Cross-Cultural Communication",
+      description: "Effective communication strategies for different cultures",
+      duration: "1.5 hours",
+      category: "intermediate",
+      completed: false,
+      thumbnail: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=600&q=80",
+    },
+    {
+      id: "4",
+      title: "Advanced Market Analysis",
+      description: "Deep dive into analyzing export market potential",
+      duration: "2 hours",
+      category: "advanced",
+      completed: false,
+      thumbnail: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=600&q=80",
+    },
+    {
+      id: "5",
+      title: "Digital Marketing for Exporters",
+      description: "Leveraging digital channels for export marketing",
+      duration: "1 hour",
+      category: "intermediate",
+      completed: false,
+      thumbnail: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80",
+    },
+  ];
+  
+  // Filter modules based on active category
+  const filteredModules = activeCategory === "all" 
+    ? modules 
+    : modules.filter(module => module.category === activeCategory);
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Training Center</h2>
+      <div>
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Training</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        
+        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between mt-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Training Modules</h1>
+            <p className="text-muted-foreground">
+              Improve your export marketing skills with our curated training modules.
+            </p>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary" className="text-xs px-2 py-1">
+              <Clock className="h-3 w-3 mr-1" />
+              {modules.filter(m => m.completed).length} of {modules.length} completed
+            </Badge>
+          </div>
+        </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2">
-          <Tabs defaultValue="all" className="space-y-4">
-            <div className="flex justify-between items-center">
-              <TabsList>
-                <TabsTrigger value="all">All Modules</TabsTrigger>
-                <TabsTrigger value="basics">Export Basics</TabsTrigger>
-                <TabsTrigger value="industry">Industry Specific</TabsTrigger>
-                <TabsTrigger value="skills">Advanced Skills</TabsTrigger>
-              </TabsList>
-            </div>
-            
-            <TabsContent value="all" className="mt-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {mockTrainingModules.map((module) => (
-                  <Card key={module.id} className="overflow-hidden">
-                    <div className="aspect-video w-full overflow-hidden">
-                      <img 
-                        src={module.image} 
-                        alt={module.title} 
-                        className="w-full h-full object-cover"
-                      />
-                      {module.progress > 0 && module.progress < 100 && (
-                        <div className="relative -mt-1">
-                          <Progress value={module.progress} className="h-1 rounded-none" />
-                        </div>
-                      )}
-                    </div>
-                    <CardContent className="p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <Badge variant={module.completed ? "default" : "outline"}>
-                          {module.category === "basics" && "Export Basics"}
-                          {module.category === "industry" && "Industry Specific"}
-                          {module.category === "skills" && "Advanced Skills"}
-                        </Badge>
-                        {module.completed && (
-                          <Badge className="bg-green-500">
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Completed
-                          </Badge>
-                        )}
-                      </div>
-                      <h3 className="font-semibold text-lg">{module.title}</h3>
-                      <p className="text-sm text-muted-foreground mt-1 mb-3">{module.description}</p>
-                      <div className="flex items-center text-sm text-muted-foreground mb-4">
-                        <BookOpen className="h-4 w-4 mr-1" />
-                        {module.lessons} lessons
-                        <span className="mx-2">•</span>
-                        <Play className="h-4 w-4 mr-1" />
-                        {module.duration}
-                      </div>
-                      {module.progress > 0 && module.progress < 100 ? (
-                        <Button 
-                          className="w-full"
-                          onClick={() => handleContinueTraining(module)}
-                        >
-                          Continue ({module.progress}%)
-                        </Button>
-                      ) : !module.completed ? (
-                        <Button 
-                          className="w-full" 
-                          variant={module.progress === 0 ? "default" : "outline"}
-                          onClick={() => handleStartTraining(module)}
-                        >
-                          Start Training
-                        </Button>
-                      ) : (
-                        <Button 
-                          className="w-full" 
-                          variant="outline"
-                          onClick={() => handleStartTraining(module)}
-                        >
-                          Review Again
-                        </Button>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="basics">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {mockTrainingModules
-                  .filter((module) => module.category === "basics")
-                  .map((module) => (
-                    <Card key={module.id} className="overflow-hidden">
-                      <div className="aspect-video w-full overflow-hidden">
-                        <img 
-                          src={module.image} 
-                          alt={module.title} 
-                          className="w-full h-full object-cover"
-                        />
-                        {module.progress > 0 && module.progress < 100 && (
-                          <div className="relative -mt-1">
-                            <Progress value={module.progress} className="h-1 rounded-none" />
-                          </div>
-                        )}
-                      </div>
-                      <CardContent className="p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <Badge variant={module.completed ? "default" : "outline"}>Export Basics</Badge>
-                          {module.completed && (
-                            <Badge className="bg-green-500">
-                              <CheckCircle className="h-3 w-3 mr-1" />
-                              Completed
-                            </Badge>
-                          )}
-                        </div>
-                        <h3 className="font-semibold text-lg">{module.title}</h3>
-                        <p className="text-sm text-muted-foreground mt-1 mb-3">{module.description}</p>
-                        <div className="flex items-center text-sm text-muted-foreground mb-4">
-                          <BookOpen className="h-4 w-4 mr-1" />
-                          {module.lessons} lessons
-                          <span className="mx-2">•</span>
-                          <Play className="h-4 w-4 mr-1" />
-                          {module.duration}
-                        </div>
-                        {module.progress > 0 && module.progress < 100 ? (
-                          <Button 
-                            className="w-full"
-                            onClick={() => handleContinueTraining(module)}
-                          >
-                            Continue ({module.progress}%)
-                          </Button>
-                        ) : !module.completed ? (
-                          <Button 
-                            className="w-full" 
-                            variant={module.progress === 0 ? "default" : "outline"}
-                            onClick={() => handleStartTraining(module)}
-                          >
-                            Start Training
-                          </Button>
-                        ) : (
-                          <Button 
-                            className="w-full" 
-                            variant="outline"
-                            onClick={() => handleStartTraining(module)}
-                          >
-                            Review Again
-                          </Button>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="industry">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {mockTrainingModules
-                  .filter((module) => module.category === "industry")
-                  .map((module) => (
-                    <Card key={module.id} className="overflow-hidden">
-                      <div className="aspect-video w-full overflow-hidden">
-                        <img 
-                          src={module.image} 
-                          alt={module.title} 
-                          className="w-full h-full object-cover"
-                        />
-                        {module.progress > 0 && module.progress < 100 && (
-                          <div className="relative -mt-1">
-                            <Progress value={module.progress} className="h-1 rounded-none" />
-                          </div>
-                        )}
-                      </div>
-                      <CardContent className="p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <Badge variant={module.completed ? "default" : "outline"}>Industry Specific</Badge>
-                          {module.completed && (
-                            <Badge className="bg-green-500">
-                              <CheckCircle className="h-3 w-3 mr-1" />
-                              Completed
-                            </Badge>
-                          )}
-                        </div>
-                        <h3 className="font-semibold text-lg">{module.title}</h3>
-                        <p className="text-sm text-muted-foreground mt-1 mb-3">{module.description}</p>
-                        <div className="flex items-center text-sm text-muted-foreground mb-4">
-                          <BookOpen className="h-4 w-4 mr-1" />
-                          {module.lessons} lessons
-                          <span className="mx-2">•</span>
-                          <Play className="h-4 w-4 mr-1" />
-                          {module.duration}
-                        </div>
-                        {module.progress > 0 && module.progress < 100 ? (
-                          <Button 
-                            className="w-full"
-                            onClick={() => handleContinueTraining(module)}
-                          >
-                            Continue ({module.progress}%)
-                          </Button>
-                        ) : !module.completed ? (
-                          <Button 
-                            className="w-full" 
-                            variant={module.progress === 0 ? "default" : "outline"}
-                            onClick={() => handleStartTraining(module)}
-                          >
-                            Start Training
-                          </Button>
-                        ) : (
-                          <Button 
-                            className="w-full" 
-                            variant="outline"
-                            onClick={() => handleStartTraining(module)}
-                          >
-                            Review Again
-                          </Button>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="skills">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {mockTrainingModules
-                  .filter((module) => module.category === "skills")
-                  .map((module) => (
-                    <Card key={module.id} className="overflow-hidden">
-                      <div className="aspect-video w-full overflow-hidden">
-                        <img 
-                          src={module.image} 
-                          alt={module.title} 
-                          className="w-full h-full object-cover"
-                        />
-                        {module.progress > 0 && module.progress < 100 && (
-                          <div className="relative -mt-1">
-                            <Progress value={module.progress} className="h-1 rounded-none" />
-                          </div>
-                        )}
-                      </div>
-                      <CardContent className="p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <Badge variant={module.completed ? "default" : "outline"}>Advanced Skills</Badge>
-                          {module.completed && (
-                            <Badge className="bg-green-500">
-                              <CheckCircle className="h-3 w-3 mr-1" />
-                              Completed
-                            </Badge>
-                          )}
-                        </div>
-                        <h3 className="font-semibold text-lg">{module.title}</h3>
-                        <p className="text-sm text-muted-foreground mt-1 mb-3">{module.description}</p>
-                        <div className="flex items-center text-sm text-muted-foreground mb-4">
-                          <BookOpen className="h-4 w-4 mr-1" />
-                          {module.lessons} lessons
-                          <span className="mx-2">•</span>
-                          <Play className="h-4 w-4 mr-1" />
-                          {module.duration}
-                        </div>
-                        {module.progress > 0 && module.progress < 100 ? (
-                          <Button 
-                            className="w-full"
-                            onClick={() => handleContinueTraining(module)}
-                          >
-                            Continue ({module.progress}%)
-                          </Button>
-                        ) : !module.completed ? (
-                          <Button 
-                            className="w-full" 
-                            variant={module.progress === 0 ? "default" : "outline"}
-                            onClick={() => handleStartTraining(module)}
-                          >
-                            Start Training
-                          </Button>
-                        ) : (
-                          <Button 
-                            className="w-full" 
-                            variant="outline"
-                            onClick={() => handleStartTraining(module)}
-                          >
-                            Review Again
-                          </Button>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-              </div>
-            </TabsContent>
-          </Tabs>
-        </div>
+      <Tabs defaultValue="all" onValueChange={(value) => setActiveCategory(value as any)}>
+        <TabsList className="mb-4">
+          <TabsTrigger value="all">All Modules</TabsTrigger>
+          <TabsTrigger value="beginner">Beginner</TabsTrigger>
+          <TabsTrigger value="intermediate">Intermediate</TabsTrigger>
+          <TabsTrigger value="advanced">Advanced</TabsTrigger>
+        </TabsList>
         
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Your Progress</CardTitle>
-              <CardDescription>Track your training journey</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Overall Completion</span>
-                  <span>25%</span>
-                </div>
-                <Progress value={25} className="h-2" />
-              </div>
-              
-              <div className="pt-2">
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="space-y-1">
-                    <span className="text-muted-foreground">Modules Completed</span>
-                    <p className="text-lg font-medium">1 / 6</p>
-                  </div>
-                  <div className="space-y-1">
-                    <span className="text-muted-foreground">Certification Progress</span>
-                    <p className="text-lg font-medium">Bronze</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Certifications</CardTitle>
-              <CardDescription>Earn specialized certifications</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <Award className="h-8 w-8 text-amber-500 mr-3" />
-                    <div>
-                      <h4 className="font-medium">Export Basics</h4>
-                      <p className="text-xs text-muted-foreground">2/2 modules completed</p>
-                    </div>
-                  </div>
-                  <Badge className="bg-amber-500">Available</Badge>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <Award className="h-8 w-8 text-gray-400 mr-3" />
-                    <div>
-                      <h4 className="font-medium">Furniture Specialist</h4>
-                      <p className="text-xs text-muted-foreground">0/1 modules completed</p>
-                    </div>
-                  </div>
-                  <Badge variant="outline" className="flex items-center">
-                    <LockIcon className="h-3 w-3 mr-1" />
-                    Locked
-                  </Badge>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <Award className="h-8 w-8 text-gray-400 mr-3" />
-                    <div>
-                      <h4 className="font-medium">Textile Specialist</h4>
-                      <p className="text-xs text-muted-foreground">0/1 modules completed</p>
-                    </div>
-                  </div>
-                  <Badge variant="outline" className="flex items-center">
-                    <LockIcon className="h-3 w-3 mr-1" />
-                    Locked
-                  </Badge>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button variant="outline" className="w-full">View All Certifications</Button>
-            </CardFooter>
-          </Card>
+        <TabsContent value={activeCategory} className="mt-0">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredModules.map((module) => (
+              <ModuleCard key={module.id} module={module} />
+            ))}
+          </div>
+        </TabsContent>
+      </Tabs>
+      
+      <div className="bg-muted/50 rounded-lg p-6 mt-8">
+        <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+          <div className="p-3 bg-primary/10 rounded-full">
+            <GraduationCap className="h-6 w-6 text-primary" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-medium">Become a Certified Export Marketer</h3>
+            <p className="text-sm text-muted-foreground">Complete all modules and take the final assessment to earn your certification.</p>
+          </div>
+          <Button>View Certification Path</Button>
         </div>
       </div>
     </div>
+  );
+}
+
+// Module card component
+function ModuleCard({ module }: { module: Module }) {
+  return (
+    <Card className="overflow-hidden">
+      <div className="relative h-48 overflow-hidden">
+        <img 
+          src={module.thumbnail} 
+          alt={module.title}
+          className="w-full h-full object-cover transition-transform hover:scale-105"
+        />
+        {module.completed && (
+          <div className="absolute top-2 right-2 bg-green-500 text-white p-1 rounded-full">
+            <CheckCircle className="h-5 w-5" />
+          </div>
+        )}
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+          <Badge className="capitalize">{module.category}</Badge>
+        </div>
+      </div>
+      
+      <CardHeader>
+        <CardTitle>{module.title}</CardTitle>
+        <CardDescription className="flex items-center gap-1">
+          <Clock className="h-4 w-4" />
+          {module.duration}
+        </CardDescription>
+      </CardHeader>
+      
+      <CardContent>
+        <p className="text-sm">{module.description}</p>
+      </CardContent>
+      
+      <CardFooter className="flex justify-between items-center">
+        <div className="flex items-center text-sm text-muted-foreground">
+          <BookOpen className="mr-1 h-4 w-4" />
+          {module.completed ? "Completed" : "Not started"}
+        </div>
+        <Button className="flex items-center">
+          {module.completed ? (
+            <>Review<Star className="ml-1 h-4 w-4" /></>
+          ) : (
+            <>Start<PlayCircle className="ml-1 h-4 w-4" /></>
+          )}
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }
