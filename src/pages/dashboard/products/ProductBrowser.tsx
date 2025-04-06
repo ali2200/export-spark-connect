@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
@@ -327,7 +326,7 @@ export default function ProductBrowser() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="max-w-md"
-                startIcon={<Search className="h-4 w-4" />}
+                icon={<Search className="h-4 w-4" />}
               />
             </div>
             <div className="flex items-center gap-2">

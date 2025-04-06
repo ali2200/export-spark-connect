@@ -163,7 +163,7 @@ export default function ProductManagement() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="max-w-sm"
-              startIcon={<Search className="h-4 w-4" />}
+              icon={<Search className="h-4 w-4" />}
             />
             <Button variant="outline" size="icon">
               <Filter className="h-4 w-4" />
