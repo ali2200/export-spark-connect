@@ -1,7 +1,7 @@
-
 import { GraduationCap, Award, ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 
 interface TrainingCertificationProps {
   completedModules: number;
