@@ -8,6 +8,7 @@ import { DashboardLayout } from "./components/dashboard/DashboardLayout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 import Index from "./pages/Index";
+import Contact from "./pages/Contact";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import NotFound from "./pages/NotFound";
@@ -23,6 +24,7 @@ import AnalyticsPage from "./pages/dashboard/analytics/AnalyticsPage";
 import SettingsPage from "./pages/dashboard/settings/SettingsPage";
 import CampaignsPage from "./pages/dashboard/campaigns/CampaignsPage"; 
 import FactoryDirectory from "./pages/directory/FactoryDirectory";
+import IndustryPage from "./pages/directory/IndustryPage";
 import FactoryMicrosite from "./pages/factory/FactoryMicrosite";
 import { useAuth } from "./context/AuthContext";
 
@@ -47,10 +49,12 @@ const App = () => (
           {/* Public Routes */}
           <Route element={<Layout />}>
             <Route path="/" element={<Index />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
             <Route path="/factories" element={<FactoryDirectory />} />
+            <Route path="/industries/:industryId" element={<IndustryPage />} />
             <Route path="/factory/:factoryId" element={<FactoryMicrosite />} />
           </Route>
 
