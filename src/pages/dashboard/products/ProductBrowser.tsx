@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,6 +16,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { ProductDetailDialog } from "@/components/dashboard/products/ProductDetailDialog";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 // Mock products data
 const mockProducts = [
@@ -165,6 +167,7 @@ const targetMarkets = [
 ];
 
 export default function ProductBrowser() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
@@ -204,6 +207,11 @@ export default function ProductBrowser() {
     setIsDetailDialogOpen(true);
   };
 
+  // Handle view product details page
+  const handleViewProductPage = (productId: string) => {
+    navigate(`/dashboard/products/${productId}`);
+  };
+
   // Handle apply to market
   const handleApplyToMarket = (product: any) => {
     toast({
@@ -214,6 +222,18 @@ export default function ProductBrowser() {
 
   return (
     <div className="space-y-6">
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Browse Products</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Browse Products</h2>
       </div>
@@ -347,7 +367,10 @@ export default function ProductBrowser() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredProducts.map((product) => (
                 <Card key={product.id} className="overflow-hidden">
-                  <div className="aspect-[3/2] w-full overflow-hidden">
+                  <div 
+                    className="aspect-[3/2] w-full overflow-hidden cursor-pointer"
+                    onClick={() => handleViewProductPage(product.id)}
+                  >
                     <img
                       src={product.image}
                       alt={product.name}
@@ -361,7 +384,10 @@ export default function ProductBrowser() {
                         ${product.commission} commission
                       </span>
                     </div>
-                    <h3 className="font-semibold text-lg truncate">
+                    <h3 
+                      className="font-semibold text-lg truncate cursor-pointer hover:text-blue-600"
+                      onClick={() => handleViewProductPage(product.id)}
+                    >
                       {product.name}
                     </h3>
                     <p className="text-sm text-muted-foreground mb-2">
@@ -374,7 +400,7 @@ export default function ProductBrowser() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleViewProduct(product)}
+                        onClick={() => handleViewProductPage(product.id)}
                         className="flex-1"
                       >
                         <Eye className="h-4 w-4 mr-2" />

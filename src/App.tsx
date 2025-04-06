@@ -15,6 +15,7 @@ import Unauthorized from "./pages/Unauthorized";
 import DashboardHome from "./pages/dashboard/DashboardHome";
 import ProductManagement from "./pages/dashboard/products/ProductManagement";
 import ProductBrowser from "./pages/dashboard/products/ProductBrowser";
+import ProductDetails from "./pages/dashboard/products/ProductDetails";
 import LeadManagement from "./pages/dashboard/leads/LeadManagement";
 import ProfilePage from "./pages/dashboard/profile/ProfilePage";
 import TrainingModules from "./pages/dashboard/training/TrainingModules";
@@ -62,6 +63,10 @@ const App = () => (
               <Route 
                 path="/dashboard/products" 
                 element={<RoleBasedProductRoute />} 
+              />
+              <Route 
+                path="/dashboard/products/:productId" 
+                element={<ProductDetails />} 
               />
               
               {/* Lead Management Routes */}
