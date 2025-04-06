@@ -12,7 +12,7 @@ interface Question {
   id: string;
   question: string;
   options: string[];
-  correctAnswer: string;
+  correctAnswer: string | string[];
   type: "single" | "multiple";
   selectedAnswer?: string | string[];
 }

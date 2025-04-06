@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,8 +28,23 @@ import { Progress } from "@/components/ui/progress";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useToast } from "@/hooks/use-toast";
 
-// Mock campaigns data
-const mockCampaigns = [
+// Types for our campaign data
+interface Campaign {
+  id: string;
+  name: string;
+  status: "active" | "pending" | "completed" | "draft";
+  target: string;
+  leads: number;
+  budget: number;
+  spent: number;
+  startDate: string;
+  endDate: string;
+  products: string[];
+  performance: number;
+}
+
+// Mock campaigns data with properly typed status values
+const mockCampaigns: Campaign[] = [
   {
     id: "1",
     name: "Egyptian Furniture Export",
@@ -97,21 +111,6 @@ const mockCampaigns = [
     performance: 68,
   }
 ];
-
-// Types for our campaign data
-interface Campaign {
-  id: string;
-  name: string;
-  status: "active" | "pending" | "completed" | "draft";
-  target: string;
-  leads: number;
-  budget: number;
-  spent: number;
-  startDate: string;
-  endDate: string;
-  products: string[];
-  performance: number;
-}
 
 export default function CampaignsPage() {
   const { user } = useAuth();
