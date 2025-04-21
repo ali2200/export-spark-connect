@@ -1,9 +1,12 @@
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import { AuthProvider } from "./context/AuthContext";
 import { Layout } from "./components/Layout";
 import { DashboardLayout } from "./components/dashboard/DashboardLayout";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { useAuth } from "./context/AuthContext";
 
 import Index from "./pages/Index";
 import Contact from "./pages/Contact";
@@ -23,9 +26,19 @@ import CampaignsPage from "./pages/dashboard/campaigns/CampaignsPage";
 import FactoryDirectory from "./pages/directory/FactoryDirectory";
 import IndustryPage from "./pages/directory/IndustryPage";
 import FactoryMicrosite from "./pages/factory/FactoryMicrosite";
-import { useAuth } from "./context/AuthContext";
 
 const queryClient = new QueryClient();
+
+// Role-based route component
+const RoleBasedProductRoute = () => {
+  const { user } = useAuth();
+  
+  if (user?.role === "factory" || user?.role === "admin") {
+    return <ProductManagement />;
+  } else {
+    return <ProductBrowser />;
+  }
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>

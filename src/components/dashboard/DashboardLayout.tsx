@@ -23,7 +23,7 @@ export function DashboardLayout() {
       {/* Mobile sidebar */}
       <Sheet open={isMobileSidebarOpen} onOpenChange={setIsMobileSidebarOpen}>
         <SheetContent side="left" className="w-72 p-0 max-w-full">
-          <DashboardSidebar isMobile={true} onClose={() => setIsMobileSidebarOpen(false)} />
+          <DashboardSidebar />
         </SheetContent>
       </Sheet>
 
